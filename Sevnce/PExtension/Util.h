@@ -10,9 +10,10 @@
 #import <UIKit/UIKit.h>
 #import "UIColor+Extension.h"
 #import "UIView+Toast.h"
+#import "HttpConnection.h"
 #import "CustomIOSAlertView.h"
-#import <ifaddrs.h>
-#import <arpa/inet.h>
+//#import <ifaddrs.h>
+//#import <arpa/inet.h>
 #import "AFHTTPRequestOperationManager.h"
 #import "CustomIOSAlertView.h"
 
@@ -206,12 +207,12 @@ typedef void (^ReturnAnimationBlock)(void);
 +(NSDictionary*)getUserInfo;
 
 /*!
-@method
-@abstract 用于防守得到的data中没有这个字段或者参数为空
-@discussion [Util getString:(id)Data];
-@param text id
-@result String
-*/
+ @method
+ @abstract 用于防守得到的data中没有这个字段或者参数为空
+ @discussion [Util getString:(id)Data];
+ @param text id
+ @result String
+ */
 + (NSString *)getString:(id)Data;
 
 

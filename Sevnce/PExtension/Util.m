@@ -197,7 +197,7 @@
             }
             if ([view isKindOfClass:[subView class]]) {
                 [view setUserInteractionEnabled:YES];
-
+                
             }
         }
     }
@@ -219,7 +219,7 @@
 }
 
 +(BOOL)isCurrentView:(UIView *)view contain:(UIView *)checkView{
-
+    
     if ([view.subviews containsObject:checkView]) {
         return YES;
     }
@@ -346,9 +346,9 @@
         //替换字符
         html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>",text] withString:@""];
     }
-//        NSString * regEx = @"<([^>]*)>";
-        NSString * regEx = @"\n";
-        html = [html stringByReplacingOccurrencesOfString:regEx withString:@""];
+    //        NSString * regEx = @"<([^>]*)>";
+    NSString * regEx = @"\n";
+    html = [html stringByReplacingOccurrencesOfString:regEx withString:@""];
     return html;
 }
 
@@ -389,11 +389,11 @@
                     self.returnAnimationBlock();
                 }
                 
-            
+                
             }];
         }];
     }];
-
+    
 }
 
 
@@ -791,26 +791,26 @@
 }
 
 //获取设备 IP 地址
-+ (NSString *)getIPAddress {
-    NSString *address = @"error";
-    struct ifaddrs*interfaces = NULL;
-    struct ifaddrs*temp_addr = NULL;
-    int success = 0;
-    success = getifaddrs(&interfaces);
-    if (success == 0) {
-        temp_addr = interfaces;
-        while(temp_addr != NULL) {
-            if(temp_addr->ifa_addr->sa_family == AF_INET) {
-                if([[NSString stringWithUTF8String:temp_addr->ifa_name]isEqualToString:@"en0"]) {
-                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in*)temp_addr->ifa_addr)->sin_addr)];
-                }
-            }
-            temp_addr = temp_addr->ifa_next;
-        }
-    }
-    freeifaddrs(interfaces);
-    return address;
-}
+//+ (NSString *)getIPAddress {
+//    NSString *address = @"error";
+//    struct ifaddrs*interfaces = NULL;
+//    struct ifaddrs*temp_addr = NULL;
+//    int success = 0;
+//    success = getifaddrs(&interfaces);
+//    if (success == 0) {
+//        temp_addr = interfaces;
+//        while(temp_addr != NULL) {
+//            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+//                if([[NSString stringWithUTF8String:temp_addr->ifa_name]isEqualToString:@"en0"]) {
+//                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in*)temp_addr->ifa_addr)->sin_addr)];
+//                }
+//            }
+//            temp_addr = temp_addr->ifa_next;
+//        }
+//    }
+//    freeifaddrs(interfaces);
+//    return address;
+//}
 
 + (BOOL)isHaveSpaceInString:(NSString *)string{
     NSRange _range = [string rangeOfString:@" "];
