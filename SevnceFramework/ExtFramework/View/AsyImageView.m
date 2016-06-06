@@ -240,7 +240,7 @@ static NSLock* _lock;
     [imageCache removeAllObjects];
 }
 @end
-//#import "AppDelegate.h"
+#import "AppDelegate.h"
 @interface SSImageView ()<UIActionSheetDelegate>{
     UIImageView * imageView_;
     UIScrollView * _contentView;
@@ -263,8 +263,8 @@ static NSLock* _lock;
 
 - (void)viewWithImage:(UIImageView*)imageView
 {
-//    AppDelegate* delegate=(AppDelegate*)([UIApplication sharedApplication].delegate);
-    window = [UIApplication sharedApplication].delegate.window;
+    AppDelegate* delegate=(AppDelegate*)([UIApplication sharedApplication].delegate);
+    window = delegate.window;
     frame=window.frame;
     oriFrame=[imageView convertRect:imageView.bounds toView:window];
     self.frame = frame;

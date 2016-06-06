@@ -197,7 +197,7 @@
             }
             if ([view isKindOfClass:[subView class]]) {
                 [view setUserInteractionEnabled:YES];
-                
+
             }
         }
     }
@@ -219,7 +219,7 @@
 }
 
 +(BOOL)isCurrentView:(UIView *)view contain:(UIView *)checkView{
-    
+
     if ([view.subviews containsObject:checkView]) {
         return YES;
     }
@@ -346,9 +346,9 @@
         //替换字符
         html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>",text] withString:@""];
     }
-    //        NSString * regEx = @"<([^>]*)>";
-    NSString * regEx = @"\n";
-    html = [html stringByReplacingOccurrencesOfString:regEx withString:@""];
+//        NSString * regEx = @"<([^>]*)>";
+        NSString * regEx = @"\n";
+        html = [html stringByReplacingOccurrencesOfString:regEx withString:@""];
     return html;
 }
 
@@ -389,11 +389,11 @@
                     self.returnAnimationBlock();
                 }
                 
-                
+            
             }];
         }];
     }];
-    
+
 }
 
 
