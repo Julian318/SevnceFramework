@@ -10,7 +10,6 @@
 #import <UIKit/UIKit.h>
 #import "UIColor+Extension.h"
 #import "UIView+Toast.h"
-#import "HttpConnection.h"
 #import "CustomIOSAlertView.h"
 #import <ifaddrs.h>
 #import <arpa/inet.h>
