@@ -11,7 +11,6 @@
 
 @interface Util ()
 
-
 @end
 @implementation Util
 
@@ -197,7 +196,7 @@
             }
             if ([view isKindOfClass:[subView class]]) {
                 [view setUserInteractionEnabled:YES];
-
+                
             }
         }
     }
@@ -219,7 +218,7 @@
 }
 
 +(BOOL)isCurrentView:(UIView *)view contain:(UIView *)checkView{
-
+    
     if ([view.subviews containsObject:checkView]) {
         return YES;
     }
@@ -346,9 +345,9 @@
         //替换字符
         html = [html stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@>",text] withString:@""];
     }
-//        NSString * regEx = @"<([^>]*)>";
-        NSString * regEx = @"\n";
-        html = [html stringByReplacingOccurrencesOfString:regEx withString:@""];
+    //        NSString * regEx = @"<([^>]*)>";
+    NSString * regEx = @"\n";
+    html = [html stringByReplacingOccurrencesOfString:regEx withString:@""];
     return html;
 }
 
@@ -389,13 +388,43 @@
                     self.returnAnimationBlock();
                 }
                 
-            
+                
             }];
         }];
     }];
-
+    
 }
 
+/**
+ * 方法作用：给视图添加动画
+ * 参数：animationType:动画类型；view:需要添加动画的视图；duration:动画执行时间
+ * 动画类型(系统): 滴水效果:rippleEffect 翻转效果:oglFlip
+                 吸收效果:suckEffect   翻页效果:pageCurl
+                 立方体效果:cube
+ */
+-(void)setAnimation:(NSString *)animationType forView:(UIView *)view duration:(CGFloat)duration completed:(ReturnAnimationBlock)block{
+    //创建动画
+    CATransition *animation = [CATransition animation];
+    //动画时间
+    [animation setDuration:duration];
+    //动画速度
+    [animation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear]];
+    //动画类型
+    [animation setType:animationType];
+    //动画方向
+    [animation setSubtype:kCATransitionFromTop];
+    //给view的layer添加动画
+    [view.layer addAnimation:animation forKey:nil];
+    
+    ///使用GCD，在动画完成后执行页面跳转
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        self.returnAnimationBlock = block;
+        if (self.returnAnimationBlock) {
+            self.returnAnimationBlock();
+        }
+    });
+}
 
 //磁盘总空间
 + (CGFloat)diskOfAllSizeMBytes{
@@ -791,26 +820,26 @@
 }
 
 //获取设备 IP 地址
-//+ (NSString *)getIPAddress {
-//    NSString *address = @"error";
-//    struct ifaddrs*interfaces = NULL;
-//    struct ifaddrs*temp_addr = NULL;
-//    int success = 0;
-//    success = getifaddrs(&interfaces);
-//    if (success == 0) {
-//        temp_addr = interfaces;
-//        while(temp_addr != NULL) {
-//            if(temp_addr->ifa_addr->sa_family == AF_INET) {
-//                if([[NSString stringWithUTF8String:temp_addr->ifa_name]isEqualToString:@"en0"]) {
-//                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in*)temp_addr->ifa_addr)->sin_addr)];
-//                }
-//            }
-//            temp_addr = temp_addr->ifa_next;
-//        }
-//    }
-//    freeifaddrs(interfaces);
-//    return address;
-//}
++ (NSString *)getIPAddress {
+    NSString *address = @"error";
+    struct ifaddrs*interfaces = NULL;
+    struct ifaddrs*temp_addr = NULL;
+    int success = 0;
+    success = getifaddrs(&interfaces);
+    if (success == 0) {
+        temp_addr = interfaces;
+        while(temp_addr != NULL) {
+            if(temp_addr->ifa_addr->sa_family == AF_INET) {
+                if([[NSString stringWithUTF8String:temp_addr->ifa_name]isEqualToString:@"en0"]) {
+                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in*)temp_addr->ifa_addr)->sin_addr)];
+                }
+            }
+            temp_addr = temp_addr->ifa_next;
+        }
+    }
+    freeifaddrs(interfaces);
+    return address;
+}
 
 + (BOOL)isHaveSpaceInString:(NSString *)string{
     NSRange _range = [string rangeOfString:@" "];
@@ -886,89 +915,79 @@
     NSString *api_token = API_TOKEN;
     NSString *bundle_id = BUNDLE_ID;
     NSString *user_id = FIR_APP_ID;
-    
-    // 1.获得请求管理者
-    AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
-    
-    // 2.封装请求参数
+
+        // 1.获得请求管理者
+    AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
+
+        // 2.封装请求参数
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    
+
     NSString *url = [NSString stringWithFormat:@"http://api.fir.im/apps/latest/%@?api_token=%@&type=ios",bundle_id,api_token];
-    
-    // 3.发送GET请求
-    [mgr GET:url parameters:params
-     success:^(AFHTTPRequestOperation *operation, id responseObject) {
-         NSLog(@"%@",responseObject);
-         
-         NSString *versionShort = responseObject[@"versionShort"];
-         NSString *appVersion = Version;
-         if (![appVersion isEqual:versionShort]) {
-             
-             CustomIOSAlertView *alertView = [[CustomIOSAlertView alloc] init];
-             
-             [alertView setContainerView:[self AlertView]];
-             
-             [alertView setButtonTitles:[NSMutableArray arrayWithObjects:@"取消", @"确定", nil]];
-             
-             [alertView setOnButtonTouchUpInside:^(CustomIOSAlertView *alertView, int buttonIndex) {
-                 NSLog(@"Block: Button at position %d is clicked on alertView %d.", buttonIndex, (int)[alertView tag]);
-                 if (buttonIndex==0) {//取消
-                     NSLog(@"1");
-                 }
-                 else if (buttonIndex==1){//确定
-                     NSLog(@"2");
-                     
-                     // 1.获得请求管理者
-                     AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
-                     
-                     // 2.封装请求参数
-                     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-                     //    params[@"id"] = @"5732d015748aac3f2400002b";
-                     //    params[@"bundle_id"] = @"com.sevnce.app.ZonJo";
-                     //    params[@"api_token"] = @"be5fd0abbfc516d878021348a2bd75cb";
-                     //    params[@"type"] = @"ios";
-                     
-                     NSString *url = [NSString stringWithFormat:@"http://api.fir.im/apps/%@/download_token?api_token=%@",user_id,api_token];
-                     
-                     // 3.发送GET请求
-                     [mgr GET:url parameters:params
-                      success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                          NSLog(@"%@",responseObject);
-                          
-                          // 1.获得请求管理者
-                          AFHTTPRequestOperationManager *mgrs = [AFHTTPRequestOperationManager manager];
-                          NSString *url = [NSString stringWithFormat:@"http://download.fir.im/apps/%@/install?download_token=%@",user_id,responseObject[@"download_token"]];
-                          
-                          // 3.发送GET请求
-                          [mgrs POST:url parameters:params
-                             success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                                 NSLog(@"%@",responseObject);
-                                 NSString *url = [NSString stringWithFormat:@"itms-services://?action=download-manifest&url=https://fir.im/plists/%@",responseObject[@"url"]];
-                                 [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-                                 exit(0);
-                                 
-                             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                 NSLog(@"%@",error);
-                             }];
-                          
-                          
-                      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                          NSLog(@"%@",error);
-                      }];
-                     
-                 }
-                 
-             }];
-             
-             [alertView setUseMotionEffects:true];
-             
-             [alertView show];
-             
-         }
-         
-     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-         NSLog(@"%@",error);
-     }];
+
+        // 3.发送GET请求
+
+    [session GET:url parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        NSString *versionShort = responseObject[@"versionShort"];
+        NSString *appVersion = Version;
+        if (![appVersion isEqual:versionShort]) {
+
+            CustomIOSAlertView *alertView = [[CustomIOSAlertView alloc] init];
+
+            [alertView setContainerView:[self AlertView]];
+
+            [alertView setButtonTitles:[NSMutableArray arrayWithObjects:@"取消", @"确定", nil]];
+
+            [alertView setOnButtonTouchUpInside:^(CustomIOSAlertView *alertView, int buttonIndex) {
+                NSLog(@"Block: Button at position %d is clicked on alertView %d.", buttonIndex, (int)[alertView tag]);
+                if (buttonIndex==0) {//取消
+                    NSLog(@"1");
+                }
+                else if (buttonIndex==1){//确定
+                    NSLog(@"2");
+
+                        // 1.获得请求管理者
+                    AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
+
+                        // 2.封装请求参数
+                    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+                        //    params[@"id"] = @"5732d015748aac3f2400002b";
+                        //    params[@"bundle_id"] = @"com.sevnce.app.ZonJo";
+                        //    params[@"api_token"] = @"be5fd0abbfc516d878021348a2bd75cb";
+                        //    params[@"type"] = @"ios";
+
+                    NSString *url = [NSString stringWithFormat:@"http://api.fir.im/apps/%@/download_token?api_token=%@",user_id,api_token];
+
+                        // 3.发送GET请求
+                    [session GET:url parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+                            // 1.获得请求管理者
+                        AFHTTPSessionManager *mgrs = [AFHTTPSessionManager manager];
+                        NSString *url = [NSString stringWithFormat:@"http://download.fir.im/apps/%@/install?download_token=%@",user_id,responseObject[@"download_token"]];
+
+                            // 3.发送GET请求
+                        [mgrs POST:url parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                            NSString *url = [NSString stringWithFormat:@"itms-services://?action=download-manifest&url=https://fir.im/plists/%@",responseObject[@"url"]];
+                            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+                            exit(0);
+                        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                            NSLog(@"%@",error);
+                        }];
+
+                    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                        NSLog(@"失败");
+                    }];
+
+                }
+
+            }];
+
+            [alertView setUseMotionEffects:true];
+
+            [alertView show];
+
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        NSLog(@"失败");
+    }];
 }
 
 ///提示View

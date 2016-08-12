@@ -12,9 +12,9 @@
 #import "UIView+Toast.h"
 #import "HttpConnection.h"
 #import "CustomIOSAlertView.h"
-//#import <ifaddrs.h>
-//#import <arpa/inet.h>
-#import "AFHTTPRequestOperationManager.h"
+#import <ifaddrs.h>
+#import <arpa/inet.h>
+#import "AFHTTPSessionManager.h"
 #import "CustomIOSAlertView.h"
 
 @interface Util : NSObject
@@ -125,7 +125,7 @@
 ///app bundle id
 #define BUNDLE_ID               [[NSBundle mainBundle] bundleIdentifier];
 ///fir.im 上的app id
-#define FIR_APP_ID              @"5732d015748aac3f2400002b"
+#define FIR_APP_ID              @"573d2b07f2fc420f9000000b"
 
 //👆👆👆👆👆👆👆👆👆👆👆👆👆========================iOS快速开发之常量定义区==========================👆👆👆👆👆👆👆👆👆👆👆👆👆
 
@@ -207,12 +207,12 @@ typedef void (^ReturnAnimationBlock)(void);
 +(NSDictionary*)getUserInfo;
 
 /*!
-@method
-@abstract 用于防守得到的data中没有这个字段或者参数为空
-@discussion [Util getString:(id)Data];
-@param text id
-@result String
-*/
+ @method
+ @abstract 用于防守得到的data中没有这个字段或者参数为空
+ @discussion [Util getString:(id)Data];
+ @param text id
+ @result String
+ */
 + (NSString *)getString:(id)Data;
 
 
@@ -238,6 +238,16 @@ typedef void (^ReturnAnimationBlock)(void);
  *  给视图添加点击动画
  */
 - (void)clickButtonAnimation:(UIView *)view returnAnimation:(ReturnAnimationBlock)block;
+
+/**
+ * 方法作用：给视图添加动画
+ * 参数：animationType:动画类型；view:需要添加动画的视图；duration:动画执行时间
+ * 动画类型(系统): 滴水效果:rippleEffect 翻转效果:oglFlip
+               吸收效果:suckEffect   翻页效果:pageCurl
+               立方体效果:cube
+ */
+-(void)setAnimation:(NSString *)animationType forView:(UIView *)view duration:(CGFloat)duration completed:(ReturnAnimationBlock)block;
+
 /**
  *  获取磁盘总空间大小
  */
