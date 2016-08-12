@@ -58,8 +58,9 @@
 
 - (void)loadWkWebView
 {
-    self.WebView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 64, screenwidth, screenheight-64)];
+    self.WebView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 20, screenwidth, screenheight-20)];
     self.WebView.backgroundColor=[UIColor clearColor];
+    self.WebView.scrollView.bounces = NO;
     self.WebView.allowsBackForwardNavigationGestures = YES;
     self.WebView.navigationDelegate = self;
     [self.WebView setOpaque:NO];
@@ -67,6 +68,7 @@
     
     if([self.urlType isEqual:@"0"]){
         [self.WebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:htmlString]]];
+//        [self.WebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com"]]];
     }else{
         
         [self.WebView loadHTMLString:htmlString baseURL:[NSURL URLWithString:BASEURL]];
